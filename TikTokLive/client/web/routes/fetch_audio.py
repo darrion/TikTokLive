@@ -1,5 +1,5 @@
 from ffmpy import FFmpeg, FFRuntimeError
-import datetime
+import datetime, timezone
 import json
 import functools
 import os

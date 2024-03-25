@@ -3,7 +3,7 @@ import functools
 import json
 import os
 import signal
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from threading import Thread
 from typing import Optional, Union
@@ -192,7 +192,7 @@ class VideoFetchRoute(ClientRoute):
 
         """
 
-        started_at: int = int(datetime.utcnow().timestamp())
+        started_at: int = int(datetime.now(timezone.utc).timestamp())
 
         try:
             self._ffmpeg.run()
@@ -201,7 +201,7 @@ class VideoFetchRoute(ClientRoute):
                 self._ffmpeg = None
                 raise
 
-        finish_time: int = int(datetime.utcnow().timestamp())
+        finish_time: int = int(datetime.now(timezone.utc).timestamp())
         record_time: int = finish_time - started_at
 
         self._logger.info(
