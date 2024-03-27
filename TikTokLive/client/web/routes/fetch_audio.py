@@ -1,5 +1,5 @@
 from ffmpy import FFmpeg, FFRuntimeError
-import datetime, timezone
+from datetime import datetime
 import json
 import functools
 import os
@@ -103,31 +103,31 @@ class AudioFetchRoute(VideoFetchRoute):
         self._ffmpeg = None
         self._thread = None
 
-    def _threaded_recording(self, unique_id: str, queue: Queue) -> None:
-        """
-        The function to run the recording in a different thread.
+    def _threaded_recording(self, unique_id: str, queue: Queue = Queue()) -> None:
+            """
+            The function to run the recording in a different thread.
 
-        :param unique_id: The unique_id of the recorded user (for logging purposes)
-        :return: None
+            :param unique_id: The unique_id of the recorded user (for logging purposes)
+            :return: None
 
-        """
+            """
 
-        started_at: int = int(datetime.utcnow().timestamp())
+            started_at: int = int(datetime.utcnow().timestamp())
 
-        try:
-            self._ffmpeg.run()
-            # Update the queue with the name of the audio file
-            output_filename = self._ffmpeg._outputs[0].split()[0]  # Get the name of the audio file from FFmpeg command
-            queue.put(output_filename)
-        except FFRuntimeError as ex:
-            if ex.exit_code and ex.exit_code != 255:
-                self._ffmpeg = None
-                raise
+            try:
+                self._ffmpeg.run()
+                # Update the queue with the name of the audio file
+                output_filename = self._ffmpeg._outputs[0].split()[0]  # Get the name of the audio file from FFmpeg command
+                queue.put(output_filename)
+            except FFRuntimeError as ex:
+                if ex.exit_code and ex.exit_code != 255:
+                    self._ffmpeg = None
+                    raise
 
-        finish_time: int = int(datetime.utcnow().timestamp())
-        record_time: int = finish_time - started_at
+            finish_time: int = int(datetime.utcnow().timestamp())
+            record_time: int = finish_time - started_at
 
-        self._logger.info(
-            f"Download stopped for user @\"{unique_id}\" which started at {started_at} and lasted "
-            f"for {record_time} second(s)."
-        )
+            self._logger.info(
+                f"Download stopped for user @\"{unique_id}\" which started at {started_at} and lasted "
+                f"for {record_time} second(s)."
+            )
